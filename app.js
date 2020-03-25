@@ -3,6 +3,7 @@ const express = require("express");
 const request = require("request");
 
 const https = require("https");
+const fs = require("fs");
 
 const app = express();
 
@@ -10,6 +11,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // Provide local static repo to express
 app.use(express.static("public"));
+
+var contents = fs.readFileSync(__dirname + "/secret.json");
+var secretInfo = JSON.parse(contents);
+const listID = secretInfo.listID;
+//console.log(listID);
+const APIKey = secretInfo.APIKey;
+//console.log(APIKey);
 
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/signup.html");
@@ -35,11 +43,10 @@ app.post("/", function(req, res) {
 
   const jsonData = JSON.stringify(data);
 
-  const listID = "listID";
   const url = "https://us19.api.mailchimp.com/3.0/lists/" + listID;
   const options = {
     method: "POST",
-    auth: "yuliz12:APIKey"
+    auth: "yuliz12:" + APIKey
   };
 
   const request = https.request(url, options, function(response) {
